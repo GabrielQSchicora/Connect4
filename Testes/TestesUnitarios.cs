@@ -7,6 +7,19 @@ namespace TesteTabuleiro
     public class TestesUnitarios
     {
         [Fact]
+        public void TesteGerador()
+        {
+            Torneio t = new Torneio();
+            t.QuantidadeJogadores = 4;
+            t.Jogadores.Add(new Jogador { });
+            t.Jogadores.Add(new Jogador { });
+            t.Jogadores.Add(new Jogador { });
+            t.Jogadores.Add(new Jogador { });
+
+            Assert.True(t.GerarJogos());
+        }
+
+        [Fact]
         public void TestTudoOcupado()
         {
 

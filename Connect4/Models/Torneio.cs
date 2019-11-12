@@ -23,33 +23,60 @@ namespace Connect4.Models
         [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(18, 2)")]
         public Decimal Premiacao { get; set; }
-        [InverseProperty("Jogador")]
-        public virtual IList<Jogador> Jogadores { get; set; }
+        //[InverseProperty("Jogador")]
+        public virtual IList<Jogador> Jogadores { get; set; } = new List<Jogador>();
         public virtual IList<Jogo> Jogos { get; set; }
 
-        public Torneio()
-        {
-            for (int i = 0; i < this.QuantidadeJogadores * 2; i++)
-            {
-                Jogos.Add(new Jogo());
-            }
-        }
 
-        public void GerarJogos()
+        public Boolean GerarJogos()
         {
-            for(int i=0; i<this.QuantidadeJogadores * 2; i++)
+            List<Jogo> jogosTurno = new List<Jogo>();
+            List<Jogo> jogosReturno = new List<Jogo>();
+
+            //Quantidade de jogos -> (((this.QuantidadeJogadores - 1) * 2) * this.QuantidadeJogadores) / 2;
+
+            for(int i = 0; i < this.QuantidadeJogadores; i++)
             {
-                for (int j = 0; j < this.QuantidadeJogadores; j++)
+                for(int j = i+1; j < this.QuantidadeJogadores; j++)
                 {
-                    if(Jogadores.IndexOf(i) == Jogadores.IndexOf(j))
+                    Jogo turno = new Jogo
                     {
-                        continue;
-                    }
-                    Jogo j1 = new Jogo();
-                    j1.Jogador1 = Jogadores.IndexOf(i);
-                    j1.Jogador2 = Jogadores.IndexOf(j);
+                        Jogador1 = Jogadores[i],
+                        Jogador2 = Jogadores[j]
+                    };
+                    Jogo returno = new Jogo
+                    {
+                        Jogador1 = Jogadores[j],
+                        Jogador2 = Jogadores[i]
+                    };
+                    jogosTurno.Add(turno);
+                    jogosReturno.Add(returno);
                 }
             }
+
+            jogosTurno = this.ShuffleList(jogosTurno);
+            jogosReturno = this.ShuffleList(jogosReturno);
+
+            jogosTurno.AddRange(jogosReturno);
+            this.Jogos = jogosTurno;
+
+            return true;
+        }
+
+        private List<Jogo> ShuffleList(List<Jogo> inputList)
+        {
+            List<Jogo> randomList = new List<Jogo>();
+
+            Random r = new Random();
+            int randomIndex;
+            while (inputList.Count > 0)
+            {
+                randomIndex = r.Next(0, inputList.Count);
+                randomList.Add(inputList[randomIndex]);
+                inputList.RemoveAt(randomIndex);
+            }
+
+            return randomList;
         }
     }
 }

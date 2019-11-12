@@ -3,19 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Connect4.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Connect4.Controllers
 {
     [Route("api/Jogo")]
     [ApiController]
+    [Authorize]
     public class JogoAPIController : ControllerBase
     {
+
+        private UserManager<ApplicationUser> _userManager { get; set; }
+        private SignInManager<ApplicationUser> _signInManager { get; set; }
+        public JogoAPIController(
+          UserManager<ApplicationUser> userManager,
+          SignInManager<ApplicationUser> signInManager)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
+
         [HttpGet(Name = "Obter")]
         [Route("Obter")]
         public Tabuleiro Obter()
         {
+            var user = _userManager.GetUserAsync(this.User).Result;
             return new Tabuleiro();
         }
 

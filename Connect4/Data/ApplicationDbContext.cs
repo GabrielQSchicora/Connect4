@@ -14,5 +14,6 @@ namespace Connect4.Data
         {
         }
         public DbSet<Connect4.Models.Torneio> Torneio { get; set; }
+        public DbSet<Connect4.Models.ApplicationUser> ApplicationUser { get; set; }
     }
 }

@@ -1,0 +1,246 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Tabuleiro Lig4</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial';
+        }
+
+        body {
+            background-color: #e5e8ea;
+        }
+
+        ul.players {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            position: fixed;
+            left: 10px;
+            top: 10px;
+        }
+
+            ul.players li {
+                list-style: none;
+                color: #FFF;
+                font-weight: bold;
+                padding: 5px 50px 5px 15px;
+                position: relative;
+            }
+
+                ul.players li:first-child:before {
+                    content: '';
+                    position: absolute;
+                    width: 15px;
+                    height: 15px;
+                    left: -7px;
+                    top: 6px;
+                    background-color: yellow;
+                    border-radius: 999px;
+                }
+
+                ul.players li:nth-child(2):before {
+                    content: '';
+                    position: absolute;
+                    width: 15px;
+                    height: 15px;
+                    left: -7px;
+                    top: 6px;
+                    background-color: red;
+                    border-radius: 999px;
+                }
+
+                ul.players li.playing:after {
+                    content: 'Jogando';
+                    background-color: rgba(0, 0, 0, 0.6);
+                    right: -5px;
+                    top: 5px;
+                    position: absolute;
+                    padding: 3px;
+                    font-size: 10px;
+                }
+
+        div.jogadas {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            color: #FFF;
+            font-weight: bold;
+            text-align: center;
+        }
+
+            div.jogadas span {
+                font-size: 40px;
+                margin-top: 10px;
+                display: block;
+            }
+
+        button#RestartGame{
+            margin: 30px auto;
+            display: block;
+            border: none;
+            background-color: blue;
+            color: #FFF;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        button#RestartGame:hover{
+            background-color: #0000ce;
+        }
+
+        div#gameTitle {
+            position: relative;
+            margin: 30px auto 0;
+            background-color: blue;
+            padding: 25px;
+            padding-top: 30px;
+            border-top-left-radius: 80px;
+            border-top-right-radius: 80px;
+            width: 700px;
+            text-align: center;
+        }
+
+            div#gameTitle span{
+                background-color: #FFF;
+                width: 85%;
+                display: block;
+                margin: 0 auto;
+                padding: 20px 0;
+            }
+
+        div#Tabuleiro {
+            position: relative;
+            margin: 0 auto 30px;
+            background-color: blue;
+            padding: 25px;
+            padding-top: 30px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            width: 700px;
+        }
+
+            div#Tabuleiro div.row {
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+            }
+
+                div#Tabuleiro div.row div.square {
+                    border-radius: 999px;
+                    width: 70px;
+                    height: 70px;
+                    background-color: #e5e8ea;
+                    margin: 15px;
+                    cursor: pointer;
+                }
+
+                    div#Tabuleiro div.row div.square:hover{
+                        background-color: #cecfd0;
+                    }
+
+                    div#Tabuleiro div.row div.square.Jogador1 {
+                        background-color: yellow;
+                    }
+
+                    div#Tabuleiro div.row div.square.Jogador2 {
+                        background-color: red;
+                    }
+    </style>
+    <script>
+        var tabuleiroDiv;
+
+        obterJogoServidor();
+
+        function obterJogoServidor() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.responseType = 'json'
+            var URLObterJogo = "api/Jogo/Obter"
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    if (this.response == null) {
+                        window.location = "/Identity/Account/Login?ReturnUrl=%2FTabuleiro.html";
+                    } else {
+                        MontarTabuleiro(this.response);
+                    }
+                }
+            };
+            //Prepara uma chamada GET no Servidor.
+            xhttp.open("GET", URLObterJogo, true);
+            //Envia a chamada.
+            xhttp.send();
+        }
+
+        function MontarTabuleiro(Tabuleiro) {
+            var TamanhoColunas = Tabuleiro.tabuleiroJogo.length,
+                TamanhoLinhas = Tabuleiro.tabuleiroJogo[0].length;
+            CriarTabuleiro(TamanhoColunas, TamanhoLinhas);
+            for (coluna = 0; coluna < TamanhoColunas; coluna++) {
+                for (linha = 0; linha < TamanhoLinhas; linha++) {
+                    AtualizarPosicao(coluna, linha, Tabuleiro.tabuleiroJogo[coluna][linha]);
+                }
+            }
+        }
+
+        function CriarTabuleiro(colunas, linhas) {
+            tabuleiroDiv = document.getElementById("Tabuleiro");
+            tabuleiroDiv.querySelectorAll('*').forEach(n => n.remove());
+            for (var i = linhas - 1; i >= 0; i--) {
+                var linhaDiv = CriarLinha(colunas);
+                linhaDiv.id = 'linha-' + i;
+                tabuleiroDiv.appendChild(linhaDiv);
+            }
+        }
+
+        function CriarLinha(colunas) {
+            var linha = document.createElement('div');
+            linha.classList.add('row');
+            for (var i = 0; i < colunas; i++) {
+                var posicaoDiv = document.createElement('div');
+                posicaoDiv.id = 'posCol-' + i;
+                posicaoDiv.classList.add('square');
+                linha.appendChild(posicaoDiv);
+            }
+            return linha;
+        }
+
+	    function AtualizarPosicao(coluna, linha, valor){
+		    var posicaoDiv = document.querySelector("#Tabuleiro")
+								    .querySelector("#linha-"+linha)
+								    .querySelector("#posCol-"+coluna);
+								
+		    posicaoDiv.classList.remove('Jogador1');
+		    posicaoDiv.classList.remove('Jogador2');
+		    if(valor == 1){
+			    posicaoDiv.classList.add('Jogador1');
+		    }else if(valor == 2){
+			    posicaoDiv.classList.add('Jogador2');
+		    }
+        }
+    </script>
+</head>
+<body>
+    <ul class="players">
+        <li class="playing">Nome do player</li>
+        <li>Nome do player</li>
+    </ul>
+
+    <div class="jogadas">
+        Numero de jogadas
+        <span>0</span>
+    </div>
+
+    <button id="RestartGame" onclick="obterJogoServidor()">Reiniciar Jogo</button>
+
+    <div id="gameTitle">
+        <span>Torneio - Lig4</span>
+    </div>
+    <div id="Tabuleiro" class="tabuleiro"></div>
+</body>
+</html>

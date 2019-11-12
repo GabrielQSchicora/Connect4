@@ -13,9 +13,39 @@
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
+                <label asp-for="Input.Nome"></label>
+                <input asp-for="Input.Nome" class="form-control" />
+                <span asp-validation-for="Input.Nome" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Input.Email"></label>
                 <input asp-for="Input.Email" class="form-control" />
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Nascimento"></label>
+                <input asp-for="Input.Nascimento" class="form-control" />
+                <span asp-validation-for="Input.Nascimento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.CPF"></label>
+                <input asp-for="Input.CPF" class="form-control" />
+                <span asp-validation-for="Input.CPF" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.CEP"></label>
+                <input asp-for="Input.CEP" class="form-control" />
+                <span asp-validation-for="Input.CEP" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Endereco"></label>
+                <input asp-for="Input.Endereco" class="form-control" readonly/>
+                <span asp-validation-for="Input.Endereco" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.NumeroCasa"></label>
+                <input asp-for="Input.NumeroCasa" class="form-control" />
+                <span asp-validation-for="Input.NumeroCasa" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.Password"></label>

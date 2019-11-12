@@ -4,14 +4,16 @@ using Connect4.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Connect4.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191111233018_Jogo")]
+    partial class Jogo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,10 +28,6 @@ namespace Connect4.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("TorneioId")
                         .HasColumnType("int");
 
@@ -38,8 +36,6 @@ namespace Connect4.Data.Migrations
                     b.HasIndex("TorneioId");
 
                     b.ToTable("Jogador");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Jogador");
                 });
 
             modelBuilder.Entity("Connect4.Models.Jogo", b =>
@@ -179,10 +175,6 @@ namespace Connect4.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
@@ -234,8 +226,6 @@ namespace Connect4.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -322,43 +312,6 @@ namespace Connect4.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Connect4.Models.JogadorPessoa", b =>
-                {
-                    b.HasBaseType("Connect4.Models.Jogador");
-
-                    b.HasDiscriminator().HasValue("JogadorPessoa");
-                });
-
-            modelBuilder.Entity("Connect4.Models.ApplicationUser", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<string>("CEP")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CPF")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Endereco")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Nascimento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NumeroCasa")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("jogadorId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("jogadorId");
-
-                    b.HasDiscriminator().HasValue("ApplicationUser");
-                });
-
             modelBuilder.Entity("Connect4.Models.Jogador", b =>
                 {
                     b.HasOne("Connect4.Models.Torneio", null)
@@ -434,13 +387,6 @@ namespace Connect4.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Connect4.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("Connect4.Models.JogadorPessoa", "jogador")
-                        .WithMany()
-                        .HasForeignKey("jogadorId");
                 });
 #pragma warning restore 612, 618
         }

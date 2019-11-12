@@ -7,6 +7,7 @@ namespace Connect4.Models
 {
     public class Jogo
     {
+        public int Id { get; set; }
         public Jogador Jogador1 { get; set; }
         public Jogador Jogador2 { get; set; }
         public Tabuleiro tabuleiro { get; set; }

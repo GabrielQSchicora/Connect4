@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,10 +8,12 @@ namespace Connect4.Models
 {
     public class Tabuleiro
     {
+        public int Id { get; set; }
         public static int NUMERO_LINHAS = 6;
         public static int NUMERO_COLUNAS = 7;
         public int JogadorAtual { get; private set; } = new Random().Next(1, 3);
         //Utilizar coluna X linha
+        [NotMapped]
         public int[,] TabuleiroJogo { get; set; }
 
         /// <summary>
