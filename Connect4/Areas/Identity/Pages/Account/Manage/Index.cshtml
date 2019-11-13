@@ -1,11 +1,18 @@
 ﻿@page
+@using Connect4.Models
 @model IndexModel
+@inject UserManager<ApplicationUser> UserManager
 @{
     ViewData["Title"] = "Profile";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
 <h4>@ViewData["Title"]</h4>
+@if (UserManager.GetUserAsync(User).Result.Nascimento.Day == DateTime.Now.Day &&
+   UserManager.GetUserAsync(User).Result.Nascimento.Month == DateTime.Now.Month)
+{
+    <h6>Parabéns, hoje é seu aniversário!</h6>
+}
 <partial name="_StatusMessage" model="Model.StatusMessage" />
 <div class="row">
     <div class="col-md-6">
@@ -14,6 +21,34 @@
             <div class="form-group">
                 <label asp-for="Username"></label>
                 <input asp-for="Username" class="form-control" disabled />
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Nascimento"></label>
+                <input asp-for="Input.Nascimento" class="form-control" />
+                <span asp-validation-for="Input.Nascimento" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.CPF"></label>
+                <input asp-for="Input.CPF" class="form-control" />
+                <span asp-validation-for="Input.CPF" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.CEP"></label>
+                <input asp-for="Input.CEP" class="form-control" />
+                <span asp-validation-for="Input.CEP" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Endereco"></label>
+                <div class="spinner-border" role="status" id="waitAddress" style="display: none;">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <input asp-for="Input.Endereco" class="form-control" readonly />
+                <span asp-validation-for="Input.Endereco" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.NumeroCasa"></label>
+                <input asp-for="Input.NumeroCasa" class="form-control" />
+                <span asp-validation-for="Input.NumeroCasa" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Input.PhoneNumber"></label>
@@ -27,4 +62,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <partial name="_CEPScriptPartial" />
+    <partial name="_MaskScriptPartial" />
 }

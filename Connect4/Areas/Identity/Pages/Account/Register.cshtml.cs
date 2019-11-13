@@ -62,12 +62,14 @@ namespace Connect4.Areas.Identity.Pages.Account
 
             [Required]
             [RegularExpression(@"^[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}$", ErrorMessage = "Seu CPF está fora do padrão.")]
-            [Display(Name = "CPF (Com traços e pontos)")]
+            [Display(Name = "CPF")]
+            [MaxLength(14)]
             public string CPF { get; set; }
 
             [Required]
             [RegularExpression(@"^[0-9]{5}-[0-9]{3}$", ErrorMessage = "Seu CEP está fora do padrão.")]
-            [Display(Name = "CEP (Com traço)")]
+            [Display(Name = "CEP")]
+            [MaxLength(9)]
             public string CEP { get; set; }
 
             [Required]

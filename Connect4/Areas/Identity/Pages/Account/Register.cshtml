@@ -39,7 +39,10 @@
             </div>
             <div class="form-group">
                 <label asp-for="Input.Endereco"></label>
-                <input asp-for="Input.Endereco" class="form-control" readonly/>
+                <div class="spinner-border" role="status" id="waitAddress" style="display: none;">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <input asp-for="Input.Endereco" class="form-control" readonly />
                 <span asp-validation-for="Input.Endereco" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -94,4 +97,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <partial name="_CEPScriptPartial" />
+    <partial name="_MaskScriptPartial" />
 }

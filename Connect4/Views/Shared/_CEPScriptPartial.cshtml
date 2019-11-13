@@ -1,0 +1,21 @@
+﻿<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $('#Input_CEP').keyup(function () {
+        if ($(this).val().length == 9 && /[0-9]{5}-[0-9]{3}/.test($(this).val())) {
+            $('#waitAddress').show();
+            var xhttp = new XMLHttpRequest();
+            xhttp.responseType = 'json'
+            var URLGetCep = "https://viacep.com.br/ws/" + $(this).val().replace('-', '') + "/json/";
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    $('#Input_Endereco').val(this.response.logradouro);
+                    $('#waitAddress').hide();
+                }
+            };
+            //Prepara uma chamada GET no Servidor.
+            xhttp.open("GET", URLGetCep, true);
+            //Envia a chamada.
+            xhttp.send();
+        }
+    });
+</script>

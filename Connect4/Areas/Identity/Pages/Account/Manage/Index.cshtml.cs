@@ -34,8 +34,33 @@ namespace Connect4.Areas.Identity.Pages.Account.Manage
         public class InputModel
         {
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "Telefone")]
             public string PhoneNumber { get; set; }
+
+            [Required]
+            [Display(Name = "Data de nascimento")]
+            [DataType(DataType.Date)]
+            public DateTime Nascimento { get; set; }
+
+            [Required]
+            [RegularExpression(@"^[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}$", ErrorMessage = "Seu CPF está fora do padrão.")]
+            [Display(Name = "CPF")]
+            [MaxLength(14)]
+            public string CPF { get; set; }
+
+            [Required]
+            [RegularExpression(@"^[0-9]{5}-[0-9]{3}$", ErrorMessage = "Seu CEP está fora do padrão.")]
+            [Display(Name = "CEP")]
+            [MaxLength(9)]
+            public string CEP { get; set; }
+
+            [Required]
+            [Display(Name = "Endereço")]
+            public string Endereco { get; set; }
+
+            [Required]
+            [Display(Name = "Número")]
+            public string NumeroCasa { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -47,7 +72,12 @@ namespace Connect4.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                Nascimento = user.Nascimento,
+                CPF = user.CPF,
+                CEP = user.CEP,
+                Endereco = user.Endereco,
+                NumeroCasa = user.NumeroCasa
             };
         }
 
@@ -88,8 +118,15 @@ namespace Connect4.Areas.Identity.Pages.Account.Manage
                 }
             }
 
+            //Não está alterando
+            user.Nascimento = Input.Nascimento;
+            user.CPF = Input.CPF;
+            user.CEP = Input.CEP;
+            user.Endereco = Input.Endereco;
+            user.NumeroCasa = Input.NumeroCasa;
+
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Dados atualizados com sucesso.";
             return RedirectToPage();
         }
     }
