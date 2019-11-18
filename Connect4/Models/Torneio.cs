@@ -23,7 +23,6 @@ namespace Connect4.Models
         [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(18, 2)")]
         public Decimal Premiacao { get; set; }
-        //[InverseProperty("Jogador")]
         public virtual IList<Jogador> Jogadores { get; set; } = new List<Jogador>();
         public virtual IList<Jogo> Jogos { get; set; }
 

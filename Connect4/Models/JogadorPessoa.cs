@@ -7,5 +7,8 @@ namespace Connect4.Models
 {
     public class JogadorPessoa : Jogador
     {
+        public IList<Jogo> Jogos { get; set; } = new List<Jogo>();
+
+        public String Nome { get; set; }
     }
 }

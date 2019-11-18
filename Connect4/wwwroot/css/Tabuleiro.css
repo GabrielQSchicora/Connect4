@@ -1,0 +1,149 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial';
+}
+
+body {
+    background-color: #e5e8ea;
+}
+
+ul#players {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 15px;
+    position: fixed;
+    left: 10px;
+    top: 10px;
+}
+
+    ul#players li {
+        list-style: none;
+        color: #FFF;
+        font-weight: bold;
+        padding: 5px 50px 5px 15px;
+        position: relative;
+    }
+
+        ul#players li:first-child:before {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            left: -7px;
+            top: 6px;
+            background-color: yellow;
+            border-radius: 999px;
+        }
+
+        ul#players li:nth-child(2):before {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            left: -7px;
+            top: 6px;
+            background-color: red;
+            border-radius: 999px;
+        }
+
+        ul#players li.playing:after {
+            content: 'Jogando';
+            background-color: rgba(0, 0, 0, 0.6);
+            right: -5px;
+            top: 5px;
+            position: absolute;
+            padding: 3px;
+            font-size: 10px;
+        }
+
+div#jogadas {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 15px;
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    color: #FFF;
+    font-weight: bold;
+    text-align: center;
+}
+
+    div#jogadas span {
+        font-size: 40px;
+        margin-top: 10px;
+        display: block;
+    }
+
+button#RestartGame {
+    margin: 30px auto;
+    display: block;
+    border: none;
+    background-color: blue;
+    color: #FFF;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+    button#RestartGame:hover {
+        background-color: #0000ce;
+    }
+
+div#gameTitle {
+    position: relative;
+    margin: 30px auto 0;
+    background-color: blue;
+    padding: 25px;
+    padding-top: 30px;
+    border-top-left-radius: 80px;
+    border-top-right-radius: 80px;
+    width: 700px;
+    text-align: center;
+}
+
+    div#gameTitle span {
+        background-color: #FFF;
+        width: 85%;
+        display: block;
+        margin: 0 auto;
+        padding: 20px 0;
+    }
+
+div#Tabuleiro {
+    position: relative;
+    margin: 0 auto 30px;
+    background-color: blue;
+    padding: 25px;
+    padding-top: 30px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    width: 700px;
+}
+
+    div#Tabuleiro div.row {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+        div#Tabuleiro div.row div.square {
+            border-radius: 999px;
+            width: 70px;
+            height: 70px;
+            background-color: #e5e8ea;
+            margin: 15px;
+            cursor: pointer;
+        }
+
+            div#Tabuleiro div.row div.square:hover {
+                background-color: #cecfd0;
+            }
+
+            div#Tabuleiro div.row div.square.Jogador1 {
+                background-color: yellow;
+            }
+
+            div#Tabuleiro div.row div.square.Jogador2 {
+                background-color: red;
+            }

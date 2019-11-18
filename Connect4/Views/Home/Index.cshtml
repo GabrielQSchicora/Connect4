@@ -1,8 +1,22 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model Connect4.Models.Torneio
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <div class="text-center">
+        @if (!SignInManager.IsSignedIn(User))
+        {
+            <h1 class="display-4">Bem vindo</h1>
+            <p>Faça seu login ou cadastro para poder jogar</p>
+
+        }
+        else
+        {
+            <br><br><br>
+            <a class="btn btn-success" asp-area="" asp-controller="Jogo" asp-action="CriarJogo">Criar Jogo</a>
+            <br><br>
+            <a class="btn btn-success" asp-area="" asp-controller="Jogo" asp-action="ContinuarJogo">Continuar Jogo</a>
+        }
+    </div>

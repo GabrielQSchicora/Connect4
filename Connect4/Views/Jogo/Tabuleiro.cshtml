@@ -1,0 +1,59 @@
+﻿@model Connect4.Models.Jogo
+@{
+    ViewData["Title"] = "Tabuleiro";
+}
+
+<link rel="stylesheet" href="~/css/Tabuleiro.css"/>
+
+<input type="hidden" id="tabuleiroId" value="@Model.tabuleiro.Id" />
+
+<ul id="players">
+    <li>
+        @if (Model.Jogador1 != null)
+        {
+            @if (Model.Jogador1.GetType().BaseType == typeof(JogadorPessoa))
+            {
+                @(((JogadorPessoa)Model.Jogador1).Nome)
+            }
+            else if (Model.Jogador1.GetType().BaseType == typeof(JogadorMaquina))
+            {
+                @(((JogadorMaquina)Model.Jogador1).Nome)
+            }
+        }
+        else
+        {
+            <span>---</span>
+        }
+    </li>
+    <li>
+        @if (Model.Jogador2 != null)
+        {
+            @if (Model.Jogador2.GetType().BaseType == typeof(JogadorPessoa))
+            {
+                @(((JogadorPessoa)Model.Jogador2).Nome)
+            }
+            else if (Model.Jogador2.GetType().BaseType == typeof(JogadorMaquina))
+            {
+                @(((JogadorMaquina)Model.Jogador2).Nome)
+            }
+        }
+        else
+        {
+            <span>---</span>
+        }
+    </li>
+</ul>
+
+<div id="jogadas">
+    Numero de jogadas
+    <span>0</span>
+</div>
+
+<div id="gameTitle">
+    <span>Torneio - Lig4</span>
+</div>
+<div id="Tabuleiro" class="tabuleiro"></div>
+
+@section Scripts{
+    <script src="~/js/Tabuleiro.js"></script>
+}

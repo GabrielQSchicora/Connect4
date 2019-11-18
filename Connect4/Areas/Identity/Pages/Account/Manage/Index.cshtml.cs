@@ -118,12 +118,17 @@ namespace Connect4.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            //Não está alterando
             user.Nascimento = Input.Nascimento;
             user.CPF = Input.CPF;
             user.CEP = Input.CEP;
             user.Endereco = Input.Endereco;
             user.NumeroCasa = Input.NumeroCasa;
+
+            var update = await _userManager.UpdateAsync(user);
+            if (!update.Succeeded)
+            {
+                throw new ApplicationException($"Erro ao atualizar o usuário com o ID '{user.Id}'.");
+            }
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Dados atualizados com sucesso.";

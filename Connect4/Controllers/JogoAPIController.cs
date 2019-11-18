@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Connect4.Data;
 using Connect4.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,15 +17,18 @@ namespace Connect4.Controllers
     [Authorize]
     public class JogoAPIController : ControllerBase
     {
-
         private UserManager<ApplicationUser> _userManager { get; set; }
         private SignInManager<ApplicationUser> _signInManager { get; set; }
+        private ApplicationDbContext _context { get; set; }
+
         public JogoAPIController(
           UserManager<ApplicationUser> userManager,
-          SignInManager<ApplicationUser> signInManager)
+          SignInManager<ApplicationUser> signInManager,
+          ApplicationDbContext dbcontext)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            this._userManager = userManager;
+            this._signInManager = signInManager;
+            this._context = dbcontext;
         }
 
         [HttpGet(Name = "Obter")]
@@ -33,6 +37,14 @@ namespace Connect4.Controllers
         {
             var user = _userManager.GetUserAsync(this.User).Result;
             return new Tabuleiro();
+        }
+
+        [HttpGet(Name = "Obter")]
+        [Route("Obter/{id}")]
+        [Authorize]
+        public Tabuleiro ObterJogo(int id)
+        {
+            return _context.Tabuleiros.Find(id);
         }
 
         [HttpPost(Name = "VerificaVencedor")]

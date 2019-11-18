@@ -1,0 +1,74 @@
+﻿@model Connect4.Models.Jogo
+@{ 
+    ViewData["Title"] = "Lobby";
+}
+    
+    <style>
+            div.players{
+                width: 500px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 150px auto 40px;
+            }
+
+            div.players div:not(.x){
+                background-color: rgba(0, 0, 0, 0.5);
+                padding: 15px;
+                text-align: center;
+                color: #FFF;
+                font-weight: bold;
+                font-size: 20px;
+            }
+
+            div.players div.x{
+                font-size: 40px;
+                font-family: Arial;
+                margin: 0 15px;
+            }
+
+            a.InitGame{
+                display: block !important;
+                margin: 0 auto;
+            }
+        </style>
+
+    <div class="players">
+        <div class="p1">
+            @if (Model.Jogador1 != null)
+            {
+                @if (Model.Jogador1.GetType().BaseType == typeof(JogadorPessoa))
+                {
+                    @(((JogadorPessoa)Model.Jogador1).Nome)
+                }
+                else if (Model.Jogador1.GetType().BaseType == typeof(JogadorMaquina))
+                {
+                    @(((JogadorMaquina)Model.Jogador1).Nome)
+                }
+            }
+            else
+            {
+                <span>---</span>
+            }
+        </div>
+        <div class="x">X</div>
+        <div class="p2">
+            @if (Model.Jogador2 != null)
+            {
+                @if (Model.Jogador2.GetType().BaseType == typeof(JogadorPessoa))
+                {
+                    @(((JogadorPessoa)Model.Jogador2).Nome)
+                }
+                else if (Model.Jogador2.GetType().BaseType == typeof(JogadorMaquina))
+                {
+                    @(((JogadorMaquina)Model.Jogador2).Nome)
+                }
+            }
+            else
+            {
+                <span>---</span>
+            }
+        </div>
+    </div>
+
+    <a asp-area="" asp-controller="Jogo" asp-action="Tabuleiro" asp-route-id="@Model.Id" class="InitGame btn btn-success">Iniciar</a>

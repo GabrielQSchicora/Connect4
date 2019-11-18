@@ -7,5 +7,7 @@ namespace Connect4.Models
 {
     public class JogadorMaquina : Jogador
     {
+        public String URLServico { get; set; }
+        public String Nome { get; set; }
     }
 }

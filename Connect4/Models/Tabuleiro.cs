@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Connect4.Models
@@ -15,6 +16,43 @@ namespace Connect4.Models
         //Utilizar coluna X linha
         [NotMapped]
         public int[,] TabuleiroJogo { get; set; }
+
+        /// <summary>
+        /// Não é possível para o Entity Framework mapear um array multidimensional.
+        /// Por isso representamos ele como uma string de inteiros.
+        /// TAMANHOCOLUNA;TAMANHOLINHA;VALORES...
+        /// </summary>
+        /// jsonIgnore significa que o valor não será serializado no objeto JSON.
+        [JsonIgnore]
+        public string InternalData
+        {
+            get
+            {
+                String internalData = "";
+                internalData = TabuleiroJogo.GetLength(0).ToString() + ';' + TabuleiroJogo.GetLength(1).ToString() + ';';
+                for (var coluna = 0; coluna < TabuleiroJogo.GetLength(0); coluna++)
+                {
+                    for (var linha = 0; linha < TabuleiroJogo.GetLength(1); linha++)
+                    {
+                        internalData = TabuleiroJogo[coluna, linha] + ";";
+                    }
+                }
+                return internalData;
+            }
+            set
+            {
+                string internalData = value;
+                var valores = internalData.Split(';');
+                TabuleiroJogo = new int[int.Parse(valores[0]), int.Parse(valores[1])];
+                for (var coluna = 0; coluna < TabuleiroJogo.GetLength(0); coluna++)
+                {
+                    for (var linha = 0; linha < TabuleiroJogo.GetLength(0); linha++)
+                    {
+                        TabuleiroJogo[coluna, linha] = int.Parse(valores[2 + (coluna * TabuleiroJogo.GetLength(1)) + linha]);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Construtor. Cria o tabuleiro com todas as posições vazias.
@@ -99,7 +137,7 @@ namespace Connect4.Models
                 return resultado;
             }
 
-            resultado = this.VerificaDiagonal();
+            resultado = this.VerificarVencedorDiagonal();
             if (resultado != 0)
             {
                 return resultado;
@@ -188,8 +226,57 @@ namespace Connect4.Models
         /// Retornar se alguem ganhou na Diagonal.
         /// </summary>
         /// <returns>Retorna 0 para nenhum jogador ou o numero do jogador que ganhou, em caso de vitória.</returns>
-        public int VerificaDiagonal()
+        public int VerificarVencedorDiagonal()
         {
+            for (int coluna = 0; coluna < TabuleiroJogo.GetLength(0); coluna++)
+            {
+                for (int linha = 0; linha < TabuleiroJogo.GetLength(1); linha++)
+                {
+                    int resultado = VerificarDiagonal(coluna, linha);
+                    if (resultado != 0)
+                        return resultado;
+                }
+            }
+            return 0;
+        }
+
+        private int VerificarDiagonal(int coluna, int linha)
+        {
+            if (TabuleiroJogo[coluna, linha] == 0)
+                return 0;
+            if (linha + 4 < this.TabuleiroJogo.GetLength(1))
+            {
+                if (coluna - 4 >= 0)
+                {
+                    int i = 1;
+                    for (i = 1; i < 4; i++)
+                    {
+                        if (TabuleiroJogo[coluna, linha] !=
+                            TabuleiroJogo[coluna - i, linha + i])
+                            break;
+                    }
+                    if (i == 4)
+                    {
+                        return TabuleiroJogo[coluna, linha];
+                    }
+                }
+                if (coluna + 4 < this.TabuleiroJogo.GetLength(0))
+                {
+                    int i = 1;
+                    for (i = 1; i < 4; i++)
+                    {
+                        if (TabuleiroJogo[coluna, linha] !=
+                            TabuleiroJogo[coluna + i, linha + i])
+                            break;
+                    }
+                    if (i == 4)
+                    {
+                        return TabuleiroJogo[coluna, linha];
+                    }
+                }
+
+            }
+
             return 0;
         }
 

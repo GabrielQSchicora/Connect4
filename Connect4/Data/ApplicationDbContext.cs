@@ -13,7 +13,10 @@ namespace Connect4.Data
             : base(options)
         {
         }
+
         public DbSet<Connect4.Models.Torneio> Torneio { get; set; }
         public DbSet<Connect4.Models.ApplicationUser> ApplicationUser { get; set; }
+        public DbSet<Connect4.Models.Jogo> Jogo { get; set; }
+        public DbSet<Connect4.Models.Tabuleiro> Tabuleiros { get; set; }
     }
 }
