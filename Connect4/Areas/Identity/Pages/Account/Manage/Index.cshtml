@@ -23,6 +23,11 @@
                 <input asp-for="Username" class="form-control" disabled />
             </div>
             <div class="form-group">
+                <label asp-for="Input.Nome"></label>
+                <input asp-for="Input.Nome" class="form-control" />
+                <span asp-validation-for="Input.Nome" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Input.Nascimento"></label>
                 <input asp-for="Input.Nascimento" class="form-control" />
                 <span asp-validation-for="Input.Nascimento" class="text-danger"></span>

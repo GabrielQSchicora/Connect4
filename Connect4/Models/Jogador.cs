@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 
 namespace Connect4.Models
 {
-    public class Jogador
+    public abstract class Jogador
     {
         public int Id { get; set; }
+
+        public abstract String Nome { get; }
     }
 }

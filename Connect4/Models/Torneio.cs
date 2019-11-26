@@ -41,12 +41,14 @@ namespace Connect4.Models
                     Jogo turno = new Jogo
                     {
                         Jogador1 = Jogadores[i],
-                        Jogador2 = Jogadores[j]
+                        Jogador2 = Jogadores[j],
+                        tabuleiro = new Tabuleiro()
                     };
                     Jogo returno = new Jogo
                     {
                         Jogador1 = Jogadores[j],
-                        Jogador2 = Jogadores[i]
+                        Jogador2 = Jogadores[i],
+                        tabuleiro = new Tabuleiro()
                     };
                     jogosTurno.Add(turno);
                     jogosReturno.Add(returno);
@@ -57,6 +59,7 @@ namespace Connect4.Models
             jogosReturno = this.ShuffleList(jogosReturno);
 
             jogosTurno.AddRange(jogosReturno);
+            //this.Jogos.Clear();
             this.Jogos = jogosTurno;
 
             return true;

@@ -1,0 +1,17 @@
+﻿@model Connect4.Models.ViewModel.SelecionarUsuarioViewModel
+@{
+    ViewData["Title"] = "Selecionar Jogadores";
+}
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="SelecionarJogadores">
+            <div class="form-group">
+                <select multiple class="form-control" asp-for="JogadoresIds" asp-items="ViewBag.jogadores">
+                </select>
+            </div>
+            <input type="submit" value="Save" class="btn btn-success" />
+        </form>
+    </div>
+</div>

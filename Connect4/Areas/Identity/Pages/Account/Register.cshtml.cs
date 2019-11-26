@@ -112,6 +112,15 @@ namespace Connect4.Areas.Identity.Pages.Account
                                                  CEP = Input.CEP,
                                                  Endereco = Input.Endereco,
                                                  NumeroCasa = Input.NumeroCasa};
+
+                Boolean cpfValido = user.ValidaCPF(Input.CPF);
+
+                if (!cpfValido)
+                {
+                    ModelState.AddModelError("CPF", "Insira um CPF válido.");
+                    return Page();
+                }
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

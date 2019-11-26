@@ -38,6 +38,10 @@ namespace Connect4.Areas.Identity.Pages.Account.Manage
             public string PhoneNumber { get; set; }
 
             [Required]
+            [Display(Name = "Nome")]
+            public String Nome { get; set; }
+
+            [Required]
             [Display(Name = "Data de nascimento")]
             [DataType(DataType.Date)]
             public DateTime Nascimento { get; set; }
@@ -73,6 +77,7 @@ namespace Connect4.Areas.Identity.Pages.Account.Manage
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
+                Nome = user.Nome,
                 Nascimento = user.Nascimento,
                 CPF = user.CPF,
                 CEP = user.CEP,
@@ -118,7 +123,17 @@ namespace Connect4.Areas.Identity.Pages.Account.Manage
                 }
             }
 
+            Boolean cpfValido = user.ValidaCPF(Input.CPF);
+
+            if (!cpfValido)
+            {
+                await LoadAsync(user);
+                ModelState.AddModelError("CPF", "Insira um CPF válido.");
+                return Page();
+            }
+
             user.Nascimento = Input.Nascimento;
+            user.Nome = Input.Nome;
             user.CPF = Input.CPF;
             user.CEP = Input.CEP;
             user.Endereco = Input.Endereco;
@@ -127,7 +142,8 @@ namespace Connect4.Areas.Identity.Pages.Account.Manage
             var update = await _userManager.UpdateAsync(user);
             if (!update.Succeeded)
             {
-                throw new ApplicationException($"Erro ao atualizar o usuário com o ID '{user.Id}'.");
+                ModelState.AddModelError("Erro", $"Erro ao atualizar o usuário com o ID '{user.Id}'.");
+                return Page();
             }
 
             await _signInManager.RefreshSignInAsync(user);

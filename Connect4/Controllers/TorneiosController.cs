@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Connect4.Data;
 using Connect4.Models;
 using Microsoft.AspNetCore.Authorization;
+using Connect4.Models.ViewModel;
 
 namespace Connect4.Controllers
 {
@@ -23,7 +24,7 @@ namespace Connect4.Controllers
         // GET: Torneios
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Torneio.ToListAsync());
+            return View(await _context.Torneio.Include(t => t.Jogadores).Include(t => t.Jogos).ToListAsync());
         }
 
         // GET: Torneios/Details/5
@@ -34,11 +35,28 @@ namespace Connect4.Controllers
                 return NotFound();
             }
 
-            var torneio = await _context.Torneio
+            var torneio = await _context.Torneio.Include(t => t.Jogos)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (torneio == null)
             {
                 return NotFound();
+            }
+
+            foreach(Jogo jogo in torneio.Jogos)
+            {
+                JogadorPessoa jp = new JogadorPessoa();
+
+                jogo.Jogador1 = _context.JogadorPessoa.Where(j => j.Id == jogo.Jogador1Id).FirstOrDefault();
+                jp = (JogadorPessoa)jogo.Jogador1;
+                jp.Usuario = _context.ApplicationUser.Where(j => j.JogadorId == jogo.Jogador1Id).FirstOrDefault();
+                jogo.Jogador1 = jp;
+
+                jogo.Jogador2 = _context.JogadorPessoa.Where(j => j.Id == jogo.Jogador2Id).FirstOrDefault();
+                jp = (JogadorPessoa)jogo.Jogador2;
+                jp.Usuario = _context.ApplicationUser.Where(j => j.JogadorId == jogo.Jogador2Id).FirstOrDefault();
+                jogo.Jogador2 = jp;
+
+                jogo.tabuleiro = _context.Jogo.Include(j => j.tabuleiro).Where(j => j.Id == jogo.Id).Select(j => j.tabuleiro).FirstOrDefault();
             }
 
             return View(torneio);
@@ -186,6 +204,96 @@ namespace Connect4.Controllers
         private bool TorneioExists(int id)
         {
             return _context.Torneio.Any(e => e.Id == id);
+        }
+
+        public IActionResult SelecionarJogadores(int id)
+        {
+            var torneio = _context.Torneio.Include(t => t.Jogadores)
+                .SingleOrDefault(m => m.Id == id);
+            if (torneio == null)
+            {
+                return NotFound();
+            }
+
+            SelecionarUsuarioViewModel viewModel = new SelecionarUsuarioViewModel();
+
+            List<int> jogadores = new List<int>();
+            if (torneio.Jogadores != null)
+            {
+                jogadores = torneio.Jogadores.Select(j => j.Id).ToList();
+            }
+
+            List<JogadorPessoa> availableUsers = _context.JogadorPessoa.Include(j => j.Usuario).ToList();
+
+            foreach(JogadorPessoa item in availableUsers)
+            {
+                item.Usuario = _context.ApplicationUser.Where(j => j.JogadorId == item.Id).FirstOrDefault();
+            }
+
+            ViewBag.Jogadores =
+                new SelectList(availableUsers,
+                nameof(JogadorPessoa.Id),
+                nameof(JogadorPessoa.Nome),
+                jogadores
+                );
+            viewModel.JogadoresIds = jogadores;
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult SelecionarJogadores(int id, [Bind(nameof(SelecionarUsuarioViewModel.JogadoresIds))] SelecionarUsuarioViewModel viewModel)
+        {
+            var torneio = _context.Torneio.Include(t => t.Jogadores).SingleOrDefault(m => m.Id == id);
+            if (torneio == null)
+            {
+                return NotFound();
+            }
+
+            var jogadores = _context.JogadorPessoa.Where(
+                jp => viewModel.JogadoresIds.Contains(jp.Id))
+                .ToList();
+
+            torneio.Jogadores.Clear();
+            foreach (var item in jogadores)
+            {
+                torneio.Jogadores.Add(item);
+            }
+            _context.SaveChanges();
+
+            List<JogadorPessoa> availableUsers = _context.JogadorPessoa.Include(j => j.Usuario).ToList();
+
+            foreach (JogadorPessoa item in availableUsers)
+            {
+                item.Usuario = _context.ApplicationUser.Where(j => j.JogadorId == item.Id).FirstOrDefault();
+            }
+
+            ViewBag.Jogadores =
+                new SelectList(availableUsers,
+                nameof(JogadorPessoa.Id),
+                nameof(JogadorPessoa.Nome),
+                jogadores
+                );
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult GerarJogos(int id)
+        {
+            var torneio = _context.Torneio.Include(t => t.Jogadores).SingleOrDefault(m => m.Id == id);
+            if (torneio == null)
+            {
+                return NotFound();
+            }
+
+            if(torneio.Jogadores.Count != torneio.QuantidadeJogadores)
+            {
+                //return BadRequest("Quantidade de jogadores insuficiente");
+            }
+
+            torneio.GerarJogos();
+            _context.SaveChanges();
+
+            return RedirectToAction(nameof(Details), new { id = id });
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,6 +16,8 @@ namespace Connect4.Models
         public string Endereco { get; set; }
         public string NumeroCasa { get; set; }
         public JogadorPessoa Jogador { get; set; } = new JogadorPessoa();
+        [ForeignKey("Jogador")]
+        public int? JogadorId { get; set; }
 
         public Boolean ValidaCPF(string cpf)
         {

@@ -13,6 +13,8 @@ namespace Connect4.Models
         public static int NUMERO_LINHAS = 6;
         public static int NUMERO_COLUNAS = 7;
         public int JogadorAtual { get; private set; } = new Random().Next(1, 3);
+        public int? Vencedor { get; set; } = 0;
+        public int quantidadeJogadas { get; private set; } = 0;
         //Utilizar coluna X linha
         [NotMapped]
         public int[,] TabuleiroJogo { get; set; }
@@ -28,13 +30,12 @@ namespace Connect4.Models
         {
             get
             {
-                String internalData = "";
-                internalData = TabuleiroJogo.GetLength(0).ToString() + ';' + TabuleiroJogo.GetLength(1).ToString() + ';';
+                String internalData = TabuleiroJogo.GetLength(0).ToString() + ';' + TabuleiroJogo.GetLength(1).ToString() + ';';
                 for (var coluna = 0; coluna < TabuleiroJogo.GetLength(0); coluna++)
                 {
                     for (var linha = 0; linha < TabuleiroJogo.GetLength(1); linha++)
                     {
-                        internalData = TabuleiroJogo[coluna, linha] + ";";
+                        internalData += TabuleiroJogo[coluna, linha] + ";";
                     }
                 }
                 return internalData;
@@ -46,7 +47,7 @@ namespace Connect4.Models
                 TabuleiroJogo = new int[int.Parse(valores[0]), int.Parse(valores[1])];
                 for (var coluna = 0; coluna < TabuleiroJogo.GetLength(0); coluna++)
                 {
-                    for (var linha = 0; linha < TabuleiroJogo.GetLength(0); linha++)
+                    for (var linha = 0; linha < TabuleiroJogo.GetLength(1); linha++)
                     {
                         TabuleiroJogo[coluna, linha] = int.Parse(valores[2 + (coluna * TabuleiroJogo.GetLength(1)) + linha]);
                     }
@@ -83,7 +84,7 @@ namespace Connect4.Models
         /// </summary>
         /// <param name="jogador">O autor da jogada.</param>
         /// <param name="posicao">A coluna da jogada.</param>
-        public void Jogar(int coluna, int jogador)
+        public Boolean Jogar(int coluna, int jogador)
         {
             if(jogador != this.JogadorAtual)
             {
@@ -98,23 +99,18 @@ namespace Connect4.Models
                 throw new Exception($"A posição deve ser menor que {NUMERO_COLUNAS}.");
             }
 
-            var jogou = false;
-
             for(int linha = NUMERO_LINHAS - 1; linha >= 0; linha--)
             {
                 if(TabuleiroJogo[coluna, linha] == 0)
                 {
                     TabuleiroJogo[coluna, linha] = jogador;
-                    jogou = true;
+                    quantidadeJogadas++;
                     this.MudaJogadorAtual();
-                    break;
+                    return true;
                 }
             }
-
-            if (!jogou)
-            {
-                throw new ArgumentException("A coluna selecionada já está cheia.");
-            }
+            
+            throw new ArgumentException("A coluna selecionada já está cheia.");
         }
 
         /// <summary>
@@ -128,26 +124,31 @@ namespace Connect4.Models
             resultado = this.VerificaLinha();
             if (resultado != 0)
             {
+                this.Vencedor = resultado;
                 return resultado;
             }
 
             resultado = this.VerificaColuna();
             if (resultado != 0)
             {
+                this.Vencedor = resultado;
                 return resultado;
             }
 
             resultado = this.VerificarVencedorDiagonal();
             if (resultado != 0)
             {
+                this.Vencedor = resultado;
                 return resultado;
             }
 
             if (this.VerificaEmpate())
             {
+                this.Vencedor = -1;
                 return -1;
             }
 
+            this.Vencedor = 0;
             return 0;
         }
 
@@ -157,27 +158,26 @@ namespace Connect4.Models
         /// <returns>Retorna 0 para nenhum jogador ou o numero do jogador que ganhou, em caso de vitória.</returns>
         public int VerificaLinha()
         {
-            for (int Linha = NUMERO_LINHAS - 1; Linha >= 0; Linha--)
+            for (int linha = 0; linha < TabuleiroJogo.GetLength(1); linha++)
             {
-                int acertosConsecultivos = 1;
-                for (int Coluna = NUMERO_COLUNAS - 2; Coluna >= 0 ; Coluna--)
+                int contador = 1;
+                for (int coluna = TabuleiroJogo.GetLength(0) - 1; coluna >= 1; coluna--)
                 {
-                    if (TabuleiroJogo[Coluna + 1, Linha] != TabuleiroJogo[Coluna, Linha])
+                    if (TabuleiroJogo[coluna, linha] == 0) { break; }
+                    if (TabuleiroJogo[coluna, linha]
+                        == TabuleiroJogo[coluna - 1, linha])
                     {
-                        acertosConsecultivos = 1;
+                        if (++contador == 4)
+                        {
+                            return TabuleiroJogo[coluna, linha];
+                        }
                     }
                     else
                     {
-                        acertosConsecultivos += 1;
-
-                        if (acertosConsecultivos == 4)
-                        {
-                            return TabuleiroJogo[Coluna + 1, Linha];
-                        }
+                        contador = 1;
                     }
                 }
             }
-
             return 0;
         }
 
@@ -187,38 +187,28 @@ namespace Connect4.Models
         /// <returns>Retorna 0 para nenhum jogador ou o numero do jogador que ganhou, em caso de vitória.</returns>
         public int VerificaColuna()
         {
-            for (int Coluna = NUMERO_COLUNAS - 1; Coluna >= 0; Coluna--)
+            for (int coluna = 0; coluna < TabuleiroJogo.GetLength(0); coluna++)
             {
-                int acertosConsecultivos = 1;
-
-                if (TabuleiroJogo[Coluna, 0] == 0)
+                int contador = 1;
+                for (int linha = TabuleiroJogo.GetLength(1) - 1; linha >= 1 ; linha--)
                 {
-                    continue;
-                }
-
-                for (int Linha = NUMERO_LINHAS - 2; Linha >= 0; Linha--)
-                {
-                    if (TabuleiroJogo[Coluna, Linha] == 0)
-                    {
+                    if (TabuleiroJogo[coluna, linha] == 0) {
                         break;
                     }
-
-                    if (TabuleiroJogo[Coluna, Linha + 1] != TabuleiroJogo[Coluna, Linha])
+                    if (TabuleiroJogo[coluna, linha]
+                        == TabuleiroJogo[coluna, linha - 1])
                     {
-                        acertosConsecultivos = 1;
+                        if (++contador == 4)
+                        {
+                            return TabuleiroJogo[coluna, linha];
+                        }
                     }
                     else
                     {
-                        acertosConsecultivos += 1;
-
-                        if (acertosConsecultivos == 4)
-                        {
-                            return TabuleiroJogo[Coluna, Linha + 1];
-                        }
+                        contador = 1;
                     }
                 }
             }
-
             return 0;
         }
 
@@ -230,7 +220,7 @@ namespace Connect4.Models
         {
             for (int coluna = 0; coluna < TabuleiroJogo.GetLength(0); coluna++)
             {
-                for (int linha = 0; linha < TabuleiroJogo.GetLength(1); linha++)
+                for (int linha = TabuleiroJogo.GetLength(1) - 1; linha >= 1 ; linha--)
                 {
                     int resultado = VerificarDiagonal(coluna, linha);
                     if (resultado != 0)
@@ -248,7 +238,7 @@ namespace Connect4.Models
             {
                 if (coluna - 4 >= 0)
                 {
-                    int i = 1;
+                    int i;
                     for (i = 1; i < 4; i++)
                     {
                         if (TabuleiroJogo[coluna, linha] !=
@@ -262,7 +252,7 @@ namespace Connect4.Models
                 }
                 if (coluna + 4 < this.TabuleiroJogo.GetLength(0))
                 {
-                    int i = 1;
+                    int i;
                     for (i = 1; i < 4; i++)
                     {
                         if (TabuleiroJogo[coluna, linha] !=

@@ -13,7 +13,7 @@ ul#players {
     padding: 15px;
     position: fixed;
     left: 10px;
-    top: 10px;
+    top: 70px;
 }
 
     ul#players li {
@@ -30,7 +30,7 @@ ul#players {
             width: 15px;
             height: 15px;
             left: -7px;
-            top: 6px;
+            top: 8px;
             background-color: yellow;
             border-radius: 999px;
         }
@@ -61,7 +61,7 @@ div#jogadas {
     padding: 15px;
     position: fixed;
     right: 10px;
-    top: 10px;
+    top: 70px;
     color: #FFF;
     font-weight: bold;
     text-align: center;
@@ -103,11 +103,12 @@ div#gameTitle {
 }
 
     div#gameTitle span {
-        background-color: #FFF;
         width: 85%;
         display: block;
         margin: 0 auto;
-        padding: 20px 0;
+        color: #FFF;
+        font-weight: bold;
+        font-size: 30px;
     }
 
 div#Tabuleiro {
@@ -132,9 +133,14 @@ div#Tabuleiro {
             width: 70px;
             height: 70px;
             background-color: #e5e8ea;
-            margin: 15px;
+            margin: 15px 13px;
             cursor: pointer;
         }
+
+            div#Tabuleiro div.row div.square.disabled {
+                pointer-events: none;
+                opacity: 0.9;
+            }
 
             div#Tabuleiro div.row div.square:hover {
                 background-color: #cecfd0;

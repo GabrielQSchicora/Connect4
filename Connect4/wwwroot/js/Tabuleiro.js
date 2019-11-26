@@ -1,28 +1,20 @@
 ﻿var tabuleiroDiv;
-var quantidadeJogadas = 0;
-var tabuleiroId = document.getElementById('tabuleiroId').value;
-var jogadorAtual = 0;
-var tabuleiroJogo;
+var jogoId;
+var authPlayerId;
 
-obterJogoServidor();
-
-function obterJogoServidor() {
+function obterJogoServidor(id) {
     var xhttp = new XMLHttpRequest();
     xhttp.responseType = 'json'
-    var URLObterJogo = "api/Jogo/Obter/" + tabuleiroId;
+    var URLObterJogo = "/api/Jogo/Obter/" + id;
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             if (this.response == null) {
                 window.location = "/Identity/Account/Login?ReturnUrl=%2FTabuleiro.html";
             } else {
                 MontarTabuleiro(this.response);
-
-                jogadorAtual = this.response.JogadorAtual;
-                tabuleiroJogo = this.response.tabuleiroJogo;
-
-                document.getElementById('players').querySelector('li:nth-child(1)').classList.remove = 'playing';
-                document.getElementById('players').querySelector('li:nth-child(2)').classList.remove = 'playing';
-                document.getElementById('players').querySelector('li:nth-child(' + jogadorAtual + ')').classList.add = 'playing';
+                verificaGanhador();
+                trocaJogadorAtual(this.response.jogadorAtual);
+                trocaQuantidadeJogadas(this.response.quantidadeJogadas);
             }
         }
     };
@@ -30,6 +22,16 @@ function obterJogoServidor() {
     xhttp.open("GET", URLObterJogo, true);
     //Envia a chamada.
     xhttp.send();
+}
+
+function trocaJogadorAtual(jogador) {
+    document.getElementById('players').querySelector('li:nth-child(1)').classList.remove('playing');
+    document.getElementById('players').querySelector('li:nth-child(2)').classList.remove('playing');
+    document.getElementById('players').querySelector('li:nth-child(' + jogador + ')').classList.add('playing');
+}
+
+function trocaQuantidadeJogadas(quantidadeJogadas) {
+    document.getElementById('jogadas').querySelector('span').innerText = quantidadeJogadas;
 }
 
 function MontarTabuleiro(Tabuleiro) {
@@ -46,7 +48,7 @@ function MontarTabuleiro(Tabuleiro) {
 function CriarTabuleiro(colunas, linhas) {
     tabuleiroDiv = document.getElementById("Tabuleiro");
     tabuleiroDiv.querySelectorAll('*').forEach(n => n.remove());
-    for (var i = linhas - 1; i >= 0; i--) {
+    for (var i = 0; i < linhas; i++) {
         var linhaDiv = CriarLinha(colunas);
         linhaDiv.id = 'linha-' + i;
         tabuleiroDiv.appendChild(linhaDiv);
@@ -60,6 +62,7 @@ function CriarLinha(colunas) {
         var posicaoDiv = document.createElement('div');
         posicaoDiv.id = 'posCol-' + i;
         posicaoDiv.classList.add('square');
+        posicaoDiv.setAttribute('onclick', 'Jogar(this, ' + i + ')')
         linha.appendChild(posicaoDiv);
     }
     return linha;
@@ -79,20 +82,47 @@ function AtualizarPosicao(coluna, linha, valor) {
     }
 }
 
-function Jogar(coluna, linha) {
+function Jogar(element, coluna) {
+    element.classList.add('disabled');
     var xhttp = new XMLHttpRequest();
     xhttp.responseType = 'json'
-    var URLJogar = "api/Jogo/Jogar/?coluna=" + coluna + "&jogador=" + jogadorAtual;
+    var URLJogar = "/api/Jogo/Jogar/?coluna=" + coluna + "&JogoId=" + jogoId;
     xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            AtualizarPosicao(coluna, linha, jogadorAtual);
-
-            quantidadeJogadas++;
-            document.getElementById('jogadas').querySelector('span').innerText = quantidadeJogadas;
+        if (this.readyState == 4) {
+            if (this.status == 200) {
+                MontarTabuleiro(this.response);
+                trocaJogadorAtual(this.response.jogadorAtual);
+                trocaQuantidadeJogadas(this.response.quantidadeJogadas);
+                verificaGanhador();
+                element.classList.remove('disabled');
+            } else {
+                if (this.response != null && typeof this.response.Message !== 'undefined') {
+                    alert(this.response.Message);
+                }
+            }
         }
     };
-    //Prepara uma chamada GET no Servidor.
-    xhttp.open("POST", URLJogar, true);
-    //Envia a chamada.
-    xhttp.send("tabuleiro=" + tabuleiroJogo);
+
+    xhttp.open("GET", URLJogar, true);
+    xhttp.send();
+}
+
+function verificaGanhador() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.responseType = 'json'
+    var URLJogar = "/api/Jogo/VerificaVencedor/" + jogoId;
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            if (this.response != 0) {
+                alert(this.response.message);
+            }
+        } else {
+            if (this.response != null && typeof this.response.Message !== 'undefined') {
+                alert(this.response.Message);
+            }
+        }
+    };
+
+    xhttp.open("GET", URLJogar, true);
+    xhttp.send();
 }

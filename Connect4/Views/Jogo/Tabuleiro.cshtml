@@ -3,22 +3,13 @@
     ViewData["Title"] = "Tabuleiro";
 }
 
-<link rel="stylesheet" href="~/css/Tabuleiro.css"/>
-
-<input type="hidden" id="tabuleiroId" value="@Model.tabuleiro.Id" />
+<link rel="stylesheet" href="~/css/Tabuleiro.css" />
 
 <ul id="players">
     <li>
         @if (Model.Jogador1 != null)
         {
-            @if (Model.Jogador1.GetType().BaseType == typeof(JogadorPessoa))
-            {
-                @(((JogadorPessoa)Model.Jogador1).Nome)
-            }
-            else if (Model.Jogador1.GetType().BaseType == typeof(JogadorMaquina))
-            {
-                @(((JogadorMaquina)Model.Jogador1).Nome)
-            }
+            @Model.Jogador1.Nome
         }
         else
         {
@@ -28,14 +19,7 @@
     <li>
         @if (Model.Jogador2 != null)
         {
-            @if (Model.Jogador2.GetType().BaseType == typeof(JogadorPessoa))
-            {
-                @(((JogadorPessoa)Model.Jogador2).Nome)
-            }
-            else if (Model.Jogador2.GetType().BaseType == typeof(JogadorMaquina))
-            {
-                @(((JogadorMaquina)Model.Jogador2).Nome)
-            }
+            @Model.Jogador2.Nome
         }
         else
         {
@@ -56,4 +40,9 @@
 
 @section Scripts{
     <script src="~/js/Tabuleiro.js"></script>
+    <script>
+        jogoId = "@Model.Id";
+        authPlayerId = "@ViewData["authPlayerId"]";
+        obterJogoServidor(jogoId);
+    </script>
 }

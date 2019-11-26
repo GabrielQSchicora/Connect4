@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Connect4.Models.Jogo>
+@{
+    ViewData["Title"] = "Continuar Jogo";
+}
+
+<style>
+    div.row{
+        border-bottom: 1px solid #dee2e6;
+        margin: 5px 0;
+        padding: 7px 0;
+    }
+
+        div.row div.action{
+            text-align: right;
+        }
+
+            div.row div.action button{
+                float: right;
+            }
+</style>
+
+@foreach (var item in Model)
+{
+    <div class="row">
+        <div class="col-6">
+            @if (item.Jogador1 == null)
+            {
+                <span>---</span>
+            }
+            else
+            {
+                @item.Jogador1.Nome
+            }
+            <span> X </span>
+            @if (item.Jogador2 == null)
+            {
+                <span>---</span>
+            }
+            else
+            {
+                @item.Jogador2.Nome
+            }
+        </div>
+        <div class="col-6 action">
+            @if (item.tabuleiro.Vencedor == 0)
+            {
+                <a class="btn btn-success" asp-controller="Jogo" asp-action="Lobby" asp-route-id="@item.Id">Jogar</a>
+            }
+            else if (item.tabuleiro.Vencedor == 1)
+            {
+                <span>O jogo foi vencido pelo jogador 1 (@item.Jogador1.Nome)</span>
+            }
+            else if (item.tabuleiro.Vencedor == 2)
+            {
+                <span>O jogo foi vencido pelo jogador 2 (@item.Jogador2.Nome)</span>
+            }
+            else if (item.tabuleiro.Vencedor == -1)
+            {
+                <span>O jogo terminou empatado</span>
+            }
+        </div>
+    </div>
+}
