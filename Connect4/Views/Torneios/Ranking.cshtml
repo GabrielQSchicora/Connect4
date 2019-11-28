@@ -1,0 +1,16 @@
+﻿@model Connect4.Views.Torneios.RankingModel
+@{
+    ViewData["Title"] = "Ranking";
+}
+
+    <h1>Ranking do torneio @Model.TorneioNome</h1>
+    <br />
+
+@{
+    int i = 1;
+}
+@foreach (var item in Model.ranking)
+{
+    @i <span>-</span> @item.Key <span>=</span> @item.Value <span>pontos.</span><hr />
+    i = i + 1;
+}

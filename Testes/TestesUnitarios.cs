@@ -168,7 +168,7 @@ namespace TesteTabuleiro
                 {0,0,0,0,0,0},
                 };
             Tabuleiro t = new Tabuleiro(valor);
-            Assert.Equal(0, t.VerificarVencedorDiagonal());
+            Assert.Equal(0, t.VerificarDiagonal());
             valor = new int[7, 6]{
                 {0,0,0,0,0,0},
                 {0,0,0,0,0,0},
@@ -179,7 +179,7 @@ namespace TesteTabuleiro
                 {0,0,0,0,0,1},
                 };
             t = new Tabuleiro(valor);
-            Assert.Equal(0, t.VerificarVencedorDiagonal());
+            Assert.Equal(0, t.VerificarDiagonal());
             valor = new int[7, 6]{
                 {1,0,0,0,0,0},
                 {1,0,0,0,0,0},
@@ -190,7 +190,7 @@ namespace TesteTabuleiro
                 {1,1,2,0,0,0},
                 };
             t = new Tabuleiro(valor);
-            Assert.Equal(2, t.VerificarVencedorDiagonal());
+            Assert.Equal(2, t.VerificarDiagonal());
             valor = new int[7, 6]{
                 {1,0,0,0,0,0},
                 {1,1,2,2,0,0},
@@ -201,7 +201,7 @@ namespace TesteTabuleiro
                 {1,1,2,0,0,0},
                 };
             t = new Tabuleiro(valor);
-            Assert.Equal(1, t.VerificarVencedorDiagonal());
+            Assert.Equal(1, t.VerificarDiagonal());
             valor = new int[7, 6]{
                 {1,0,0,0,0,0},
                 {1,1,2,2,0,0},
@@ -212,7 +212,7 @@ namespace TesteTabuleiro
                 {1,1,2,0,0,0},
                 };
             t = new Tabuleiro(valor);
-            Assert.Equal(2, t.VerificarVencedorDiagonal());
+            Assert.Equal(2, t.VerificarDiagonal());
             valor = new int[7, 6]{
                 {1,0,0,0,0,0},
                 {1,1,2,1,0,0},
@@ -223,7 +223,7 @@ namespace TesteTabuleiro
                 {1,1,2,0,0,0},
                 };
             t = new Tabuleiro(valor);
-            Assert.Equal(1, t.VerificarVencedorDiagonal());
+            Assert.Equal(1, t.VerificarDiagonal());
             valor = new int[7, 6]{
                 {1,0,0,0,0,0},
                 {1,1,2,2,0,0},
@@ -234,7 +234,7 @@ namespace TesteTabuleiro
                 {1,1,2,0,0,0},
                 };
             t = new Tabuleiro(valor);
-            Assert.Equal(2, t.VerificarVencedorDiagonal());
+            Assert.Equal(2, t.VerificarDiagonal());
         }
     }
 }

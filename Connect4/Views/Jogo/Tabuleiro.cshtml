@@ -44,5 +44,8 @@
         jogoId = "@Model.Id";
         authPlayerId = "@ViewData["authPlayerId"]";
         obterJogoServidor(jogoId);
+        setTimeout(function () {
+            setInterval(function(){ VerificaJogadorAtual(jogoId); }, 5000);
+        }, 5000);
     </script>
 }

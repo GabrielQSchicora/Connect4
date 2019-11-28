@@ -1,6 +1,7 @@
 ﻿var tabuleiroDiv;
 var jogoId;
 var authPlayerId;
+var jogadorAtual;
 
 function obterJogoServidor(id) {
     var xhttp = new XMLHttpRequest();
@@ -13,6 +14,7 @@ function obterJogoServidor(id) {
             } else {
                 MontarTabuleiro(this.response);
                 verificaGanhador();
+                jogadorAtual = this.response.jogadorAtual;
                 trocaJogadorAtual(this.response.jogadorAtual);
                 trocaQuantidadeJogadas(this.response.quantidadeJogadas);
             }
@@ -91,6 +93,7 @@ function Jogar(element, coluna) {
         if (this.readyState == 4) {
             if (this.status == 200) {
                 MontarTabuleiro(this.response);
+                jogadorAtual = this.response.jogadorAtual;
                 trocaJogadorAtual(this.response.jogadorAtual);
                 trocaQuantidadeJogadas(this.response.quantidadeJogadas);
                 verificaGanhador();
@@ -124,5 +127,26 @@ function verificaGanhador() {
     };
 
     xhttp.open("GET", URLJogar, true);
+    xhttp.send();
+}
+
+function VerificaJogadorAtual(id) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.responseType = 'json'
+    var URLObterJogo = "/api/Jogo/VerificaJogadorAtual/" + id;
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            if (this.response == null) {
+                window.location = "/Identity/Account/Login?ReturnUrl=%2FTabuleiro.html";
+            } else {
+                if (this.response != jogadorAtual) {
+                    obterJogoServidor(id);
+                }
+            }
+        }
+    };
+    //Prepara uma chamada GET no Servidor.
+    xhttp.open("GET", URLObterJogo, true);
+    //Envia a chamada.
     xhttp.send();
 }

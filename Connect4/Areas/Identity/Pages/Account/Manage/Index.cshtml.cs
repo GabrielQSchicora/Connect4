@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Connect4.Data;
 using Connect4.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +15,16 @@ namespace Connect4.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _context;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            ApplicationDbContext dbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = dbContext;
         }
 
         public string Username { get; set; }
@@ -129,6 +133,24 @@ namespace Connect4.Areas.Identity.Pages.Account.Manage
             {
                 await LoadAsync(user);
                 ModelState.AddModelError("CPF", "Insira um CPF válido.");
+                return Page();
+            }
+
+            var cpfAlreadyRegistered = _context.ApplicationUser.Where(u => u.CPF == Input.CPF).FirstOrDefault();
+
+            if (cpfAlreadyRegistered != null && cpfAlreadyRegistered.Id != user.Id)
+            {
+                await LoadAsync(user);
+                ModelState.AddModelError("CPF", "Já existe alguem cadastrado com esse CPF.");
+                return Page();
+            }
+
+            var idade = (DateTime.Now - Input.Nascimento).TotalDays / 365;
+
+            if (idade < 18 || idade > 120)
+            {
+                await LoadAsync(user);
+                ModelState.AddModelError("Nascimento", "Sua idade deverá ser entre 18 e 120 anos");
                 return Page();
             }
 

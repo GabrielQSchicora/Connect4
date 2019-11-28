@@ -135,7 +135,7 @@ namespace Connect4.Models
                 return resultado;
             }
 
-            resultado = this.VerificarVencedorDiagonal();
+            resultado = this.VerificarDiagonal();
             if (resultado != 0)
             {
                 this.Vencedor = resultado;
@@ -216,55 +216,47 @@ namespace Connect4.Models
         /// Retornar se alguem ganhou na Diagonal.
         /// </summary>
         /// <returns>Retorna 0 para nenhum jogador ou o numero do jogador que ganhou, em caso de vitória.</returns>
-        public int VerificarVencedorDiagonal()
+        public int VerificarDiagonal()
         {
-            for (int coluna = 0; coluna < TabuleiroJogo.GetLength(0); coluna++)
+            for (int linha = TabuleiroJogo.GetLength(1) - 1; linha >= 3 ; linha--)
             {
-                for (int linha = TabuleiroJogo.GetLength(1) - 1; linha >= 1 ; linha--)
+                for (int coluna = 0 ; coluna < TabuleiroJogo.GetLength(0); coluna++)
                 {
-                    int resultado = VerificarDiagonal(coluna, linha);
-                    if (resultado != 0)
-                        return resultado;
-                }
-            }
-            return 0;
-        }
+                    if (TabuleiroJogo[coluna, linha] == 0)
+                    {
+                        continue;
+                    }
 
-        private int VerificarDiagonal(int coluna, int linha)
-        {
-            if (TabuleiroJogo[coluna, linha] == 0)
-                return 0;
-            if (linha + 4 < this.TabuleiroJogo.GetLength(1))
-            {
-                if (coluna - 4 >= 0)
-                {
-                    int i;
-                    for (i = 1; i < 4; i++)
+                    if(coluna + 1 - 4 >= 0)
                     {
-                        if (TabuleiroJogo[coluna, linha] !=
-                            TabuleiroJogo[coluna - i, linha + i])
-                            break;
+                        int i;
+                        for (i = 1; i < 4; i++)
+                        {
+                            if (TabuleiroJogo[coluna, linha] !=
+                                TabuleiroJogo[coluna - i, linha - i])
+                                break;
+                        }
+                        if (i == 4)
+                        {
+                            return TabuleiroJogo[coluna, linha];
+                        }
                     }
-                    if (i == 4)
-                    {
-                        return TabuleiroJogo[coluna, linha];
-                    }
-                }
-                if (coluna + 4 < this.TabuleiroJogo.GetLength(0))
-                {
-                    int i;
-                    for (i = 1; i < 4; i++)
-                    {
-                        if (TabuleiroJogo[coluna, linha] !=
-                            TabuleiroJogo[coluna + i, linha + i])
-                            break;
-                    }
-                    if (i == 4)
-                    {
-                        return TabuleiroJogo[coluna, linha];
-                    }
-                }
 
+                    if (coluna - 1 + 4 < this.TabuleiroJogo.GetLength(0))
+                    {
+                        int i;
+                        for (i = 1; i < 4; i++)
+                        {
+                            if (TabuleiroJogo[coluna, linha] !=
+                                TabuleiroJogo[coluna + i, linha - i])
+                                break;
+                        }
+                        if (i == 4)
+                        {
+                            return TabuleiroJogo[coluna, linha];
+                        }
+                    }
+                }
             }
 
             return 0;

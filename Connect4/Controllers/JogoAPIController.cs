@@ -48,7 +48,7 @@ namespace Connect4.Controllers
 
             if (jogo == null)
             {
-                throw new ApplicationException("O jogo não existe");
+                return NotFound();
             }
 
             int? jogadorId = _userManager.GetUserAsync(User).Result.JogadorId;
@@ -199,6 +199,27 @@ namespace Connect4.Controllers
             }
 
             return Ok(jogo.tabuleiro);
+        }
+
+        [HttpGet(Name = "VerificaJogadorAtual")]
+        [Route("VerificaJogadorAtual/{id}")]
+        [Authorize]
+        public IActionResult VerificaJogadorAtual(int id)
+        {
+            var jogo = _context.Jogo.Include(j => j.tabuleiro).Where(j => j.Id == id).FirstOrDefault();
+
+            if (jogo == null)
+            {
+                return NotFound();
+            }
+
+            int? jogadorId = _userManager.GetUserAsync(User).Result.JogadorId;
+            if (!(jogadorId == jogo.Jogador1Id || jogadorId == jogo.Jogador2Id))
+            {
+                return Forbid();
+            }
+
+            return Ok(jogo.tabuleiro.JogadorAtual);
         }
     }
 }

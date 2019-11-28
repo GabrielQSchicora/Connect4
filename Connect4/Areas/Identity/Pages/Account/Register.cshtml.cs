@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Connect4.Data;
 using Connect4.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -24,17 +25,20 @@ namespace Connect4.Areas.Identity.Pages.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _context;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext dbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _context = dbContext;
         }
 
         [BindProperty]
@@ -118,6 +122,22 @@ namespace Connect4.Areas.Identity.Pages.Account
                 if (!cpfValido)
                 {
                     ModelState.AddModelError("CPF", "Insira um CPF válido.");
+                    return Page();
+                }
+
+                var cpfAlreadyRegistered = _context.ApplicationUser.Where(u => u.CPF == Input.CPF).FirstOrDefault();
+
+                if (cpfAlreadyRegistered != null)
+                {
+                    ModelState.AddModelError("CPF", "Já existe alguem cadastrado com esse CPF.");
+                    return Page();
+                }
+
+                var idade = (DateTime.Now - Input.Nascimento).TotalDays / 365;
+
+                if (idade < 18 || idade > 120)
+                {
+                    ModelState.AddModelError("Nascimento", "Sua idade deverá ser entre 18 e 120 anos");
                     return Page();
                 }
 

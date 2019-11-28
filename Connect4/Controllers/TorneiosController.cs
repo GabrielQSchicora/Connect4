@@ -9,6 +9,7 @@ using Connect4.Data;
 using Connect4.Models;
 using Microsoft.AspNetCore.Authorization;
 using Connect4.Models.ViewModel;
+using Connect4.Views.Torneios;
 
 namespace Connect4.Controllers
 {
@@ -287,13 +288,79 @@ namespace Connect4.Controllers
 
             if(torneio.Jogadores.Count != torneio.QuantidadeJogadores)
             {
-                //return BadRequest("Quantidade de jogadores insuficiente");
+                return BadRequest("Quantidade de jogadores insuficiente");
             }
 
             torneio.GerarJogos();
             _context.SaveChanges();
 
             return RedirectToAction(nameof(Details), new { id = id });
+        }
+
+        public IActionResult Ranking(int id)
+        {
+            var torneio = _context.Torneio.Include(t => t.Jogadores).Include(t => t.Jogos).SingleOrDefault(m => m.Id == id);
+            if (torneio == null)
+            {
+                return NotFound();
+            }
+
+            if(torneio.Jogos == null)
+            {
+                return BadRequest();
+            }
+
+            Dictionary<String,int> ranking = new Dictionary<String, int>();
+
+            foreach (Jogador jogador in torneio.Jogadores)
+            {
+                if(jogador is JogadorPessoa)
+                {
+                    JogadorPessoa jp = new JogadorPessoa();
+                    jp = (JogadorPessoa)jogador;
+                    jp.Usuario = _context.ApplicationUser.Where(j => j.JogadorId == jp.Id).FirstOrDefault();
+                    ranking[jp.Nome] = 0;
+                }
+                else
+                {
+                    ranking[jogador.Nome] = 0;
+                }
+
+            }
+
+            foreach (Jogo jogo in torneio.Jogos)
+            {
+                Jogo jg = _context.Jogo.Include(j => j.Jogador1).Include(j => j.Jogador2).Include(j => j.tabuleiro).Where(j => j.Id == jogo.Id).FirstOrDefault();
+
+                if(jg.tabuleiro == null)
+                {
+                    jg.tabuleiro = new Tabuleiro();
+                }
+
+                if(jg.tabuleiro.Vencedor == 1)
+                {
+                    ranking[jg.Jogador1.Nome] = ranking[jg.Jogador1.Nome] + 3;
+                }
+                else if (jg.tabuleiro.Vencedor == 2)
+                {
+                    ranking[jg.Jogador2.Nome] = ranking[jg.Jogador2.Nome] + 3;
+                }
+                else if (jg.tabuleiro.Vencedor == -1)
+                {
+                    ranking[jg.Jogador1.Nome] = ranking[jg.Jogador1.Nome] + 1;
+                    ranking[jg.Jogador2.Nome] = ranking[jg.Jogador2.Nome] + 1;
+                }
+            }
+
+            var orderRanking = from entry in ranking orderby entry.Value descending select entry;
+
+            RankingModel rm = new RankingModel
+            {
+                TorneioNome = torneio.Nome,
+                ranking = orderRanking.ToDictionary(t => t.Key, t => t.Value)
+        };
+
+            return View(rm);
         }
     }
 }
