@@ -33,11 +33,11 @@ namespace Connect4.Controllers
 
         [Authorize]
         /// <summary>
-        /// Ação para criar o jogo.
+        /// Ação para criar o jogo com uma pessoa.
         /// Verifica se já existe um jogo faltando jogador, se existir utiliza esse, se não cria um novo.
         /// </summary>
         /// <returns>Redireciona o usuário para o jogo.</returns>
-        public IActionResult CriarJogo()
+        public IActionResult CriarJogoPessoa()
         {
             Jogo Jogo = _context.Jogo.Include(j => j.Jogador1)
                                      .Include(j => j.Jogador2)
@@ -77,7 +77,46 @@ namespace Connect4.Controllers
 
             return RedirectToAction(nameof(Lobby), new { id = Jogo.Id });
         }
-        
+
+        [Authorize]
+        /// <summary>
+        /// Ação para criar o jogo com uma máquina.
+        /// Seleciona uma inteligencia artificial aletoriamente e inclui no jogo.
+        /// </summary>
+        /// <returns>Redireciona o usuário para o jogo.</returns>
+        public IActionResult CriarJogoMaquina()
+        {
+            var jogadorData = _userManager.GetUserAsync(User).Result;
+            int? jogadorId = jogadorData.JogadorId;
+            JogadorPessoa player = _context.JogadorPessoa.Find(jogadorId);
+            player.Usuario = jogadorData;
+
+            if (player == null || player.Id == 0)
+            {
+                return NotFound();
+            }
+
+            var maquinas = _context.JogadorMaquina.ToList();
+
+            if(maquinas.Count < 1)
+            {
+                return BadRequest("Nenhuma máquina cadastrada");
+            }
+
+            Jogador randMachinePlayer = (Jogador) maquinas[new Random().Next(0, maquinas.Count - 1)];
+
+            Jogo Jogo = new Jogo
+            {
+                Jogador1 = player,
+                Jogador2 = randMachinePlayer,
+                tabuleiro = new Tabuleiro()
+            };
+            _context.Add(Jogo);
+            _context.SaveChanges();
+
+            return RedirectToAction(nameof(Lobby), new { id = Jogo.Id });
+        }
+
         [Authorize]
         public IActionResult ContinuarJogo()
         {
@@ -85,6 +124,7 @@ namespace Connect4.Controllers
             var jogos = _context.Jogo.Include(j => j.Jogador1)
                                      .Include(j => j.Jogador2)
                                      .Include(j => j.tabuleiro)
+                                     .Include(j => j.Torneio)
                                      .Where(j => (j.Jogador1.Id == jogadorData.JogadorId 
                                                     || j.Jogador2.Id == jogadorData.JogadorId));
 
@@ -155,7 +195,11 @@ namespace Connect4.Controllers
         [Authorize]
         public IActionResult Tabuleiro(int id)
         {
-            Jogo jogo = _context.Jogo.Include(j => j.Jogador1).Include(j => j.Jogador2).Include(j => j.tabuleiro).Where(j => j.Id == id).Select(j => j).FirstOrDefault();
+            Jogo jogo = _context.Jogo.Include(j => j.Jogador1)
+                                     .Include(j => j.Jogador2)
+                                     .Include(j => j.tabuleiro)
+                                     .Include(j => j.Torneio)
+                                     .Where(j => j.Id == id).Select(j => j).FirstOrDefault();
             if (jogo == null)
             {
                 return NotFound();
@@ -187,6 +231,15 @@ namespace Connect4.Controllers
             {
                 jogo.tabuleiro = new Tabuleiro();
                 _context.SaveChanges();
+            }
+            
+            if(jogo.TorneioId == null)
+            {
+                ViewData["tituloTabuleiro"] = "Jogo amistoso";
+            }
+            else
+            {
+                ViewData["tituloTabuleiro"] = "Torneio" + ((jogo.Torneio == null)?"":" "+ jogo.Torneio.Nome);
             }
 
             ViewData["authPlayerId"] = _userManager.GetUserAsync(User).Result.JogadorId;

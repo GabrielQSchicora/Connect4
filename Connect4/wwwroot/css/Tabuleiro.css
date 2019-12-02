@@ -24,33 +24,33 @@ ul#players {
         position: relative;
     }
 
-        ul#players li:first-child:before {
+        ul#players li.SignedPlayer {
+            border: 1px solid #00ff0859;
+        }
+
+        ul#players li:before {
             content: '';
             position: absolute;
             width: 15px;
             height: 15px;
-            left: -7px;
+            left: -8px;
             top: 8px;
-            background-color: yellow;
             border-radius: 999px;
         }
 
+        ul#players li:first-child:before {
+            background-color: yellow;
+        }
+
         ul#players li:nth-child(2):before {
-            content: '';
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            left: -7px;
-            top: 6px;
             background-color: red;
-            border-radius: 999px;
         }
 
         ul#players li.playing:after {
             content: 'Jogando';
             background-color: rgba(0, 0, 0, 0.6);
-            right: -5px;
-            top: 5px;
+            right: 0px;
+            top: 6px;
             position: absolute;
             padding: 3px;
             font-size: 10px;

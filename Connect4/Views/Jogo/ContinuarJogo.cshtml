@@ -40,6 +40,15 @@
             {
                 @item.Jogador2.Nome
             }
+            @if (item.Torneio == null)
+            {
+                <span> (Jogo amistoso)</span>
+            }
+            else
+            {
+
+                <span> (Torneio @item.Torneio.Nome)</span>
+            }
         </div>
         <div class="col-6 action">
             @if (item.tabuleiro.Vencedor == 0)

@@ -18,5 +18,9 @@ namespace Connect4.Models
         public Tabuleiro tabuleiro { get; set; }
         [ForeignKey("tabuleiro")]
         public int? TabuleiroId { get; set; }
+        [InverseProperty("Jogos")]
+        public Torneio Torneio { get; set; }
+        [ForeignKey("Torneio")]
+        public int? TorneioId { get; set; }
     }
 }

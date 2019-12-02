@@ -1,4 +1,6 @@
 ﻿@model Connect4.Models.Jogo
+@inject UserManager<ApplicationUser> UserManager
+@using Microsoft.AspNetCore.Identity
 @{
     ViewData["Title"] = "Lobby";
 }
@@ -19,7 +21,12 @@
             color: #FFF;
             font-weight: bold;
             font-size: 20px;
+            border: 2px solid transparent;
         }
+
+            div.players div:not(.x).SignedPlayer {
+                border-color: #00ff0894;
+            }
 
         div.players div.x {
             font-size: 40px;
@@ -34,7 +41,7 @@
 </style>
 
 <div class="players">
-    <div class="p1">
+    <div class="p1" id="PlayerId-@Model.Jogador1.Id">
         @if (Model.Jogador1 != null)
         {
             @Model.Jogador1.Nome
@@ -45,7 +52,7 @@
         }
     </div>
     <div class="x">X</div>
-    <div class="p2">
+    <div class="p2" id="PlayerId-@Model.Jogador2.Id">
         @if (Model.Jogador2 != null)
         {
             @Model.Jogador2.Nome
@@ -66,3 +73,8 @@ else
     <button onclick="alert('Aguarde o adversário para iniciar.')" class="InitGame btn btn-success">Aguardando Adversário</button>
 }
 
+@section Scripts{
+    <script>
+        $('#PlayerId-' +@UserManager.GetUserAsync(User).Result.JogadorId).addClass('SignedPlayer');
+    </script>
+}

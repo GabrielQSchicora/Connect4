@@ -1,4 +1,6 @@
 ﻿@model Connect4.Models.Jogo
+@inject UserManager<ApplicationUser> UserManager
+@using Microsoft.AspNetCore.Identity
 @{
     ViewData["Title"] = "Tabuleiro";
 }
@@ -6,7 +8,7 @@
 <link rel="stylesheet" href="~/css/Tabuleiro.css" />
 
 <ul id="players">
-    <li>
+    <li id="PlayerId-@Model.Jogador1.Id">
         @if (Model.Jogador1 != null)
         {
             @Model.Jogador1.Nome
@@ -16,7 +18,7 @@
             <span>---</span>
         }
     </li>
-    <li>
+    <li id="PlayerId-@Model.Jogador2.Id">
         @if (Model.Jogador2 != null)
         {
             @Model.Jogador2.Nome
@@ -34,13 +36,14 @@
 </div>
 
 <div id="gameTitle">
-    <span>Torneio - Lig4</span>
+    <span>@ViewData["tituloTabuleiro"] - Lig4</span>
 </div>
 <div id="Tabuleiro" class="tabuleiro"></div>
 
 @section Scripts{
     <script src="~/js/Tabuleiro.js"></script>
     <script>
+        $('#PlayerId-' +@UserManager.GetUserAsync(User).Result.JogadorId).addClass('SignedPlayer');
         jogoId = "@Model.Id";
         authPlayerId = "@ViewData["authPlayerId"]";
         obterJogoServidor(jogoId);

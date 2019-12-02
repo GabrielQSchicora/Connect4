@@ -17,7 +17,7 @@
                 {
                     <span>Olá </span>
                 }
-                @User.Identity.Name!
+                @UserManager.GetUserAsync(User).Result.Nome!
             </a>
         </li>
         <li class="nav-item">

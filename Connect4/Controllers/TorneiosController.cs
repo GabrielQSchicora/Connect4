@@ -224,15 +224,23 @@ namespace Connect4.Controllers
                 jogadores = torneio.Jogadores.Select(j => j.Id).ToList();
             }
 
-            List<JogadorPessoa> availableUsers = _context.JogadorPessoa.Include(j => j.Usuario).ToList();
+            List<JogadorPessoa> availableUsersPessoa = _context.JogadorPessoa.Include(j => j.Usuario).ToList();
+            List<JogadorMaquina> availableUsersMaquina = _context.JogadorMaquina.ToList();
+            List<Jogador> allAvailableUsers = new List<Jogador>();
 
-            foreach(JogadorPessoa item in availableUsers)
+            foreach (JogadorPessoa item in availableUsersPessoa)
             {
                 item.Usuario = _context.ApplicationUser.Where(j => j.JogadorId == item.Id).FirstOrDefault();
+                allAvailableUsers.Add((Jogador)item);
+            }
+
+            foreach (JogadorMaquina item in availableUsersMaquina)
+            {
+                allAvailableUsers.Add((Jogador)item);
             }
 
             ViewBag.Jogadores =
-                new SelectList(availableUsers,
+                new SelectList(allAvailableUsers,
                 nameof(JogadorPessoa.Id),
                 nameof(JogadorPessoa.Nome),
                 jogadores
@@ -261,15 +269,23 @@ namespace Connect4.Controllers
             }
             _context.SaveChanges();
 
-            List<JogadorPessoa> availableUsers = _context.JogadorPessoa.Include(j => j.Usuario).ToList();
+            List<JogadorPessoa> availableUsersPessoa = _context.JogadorPessoa.Include(j => j.Usuario).ToList();
+            List<JogadorMaquina> availableUsersMaquina = _context.JogadorMaquina.ToList();
+            List<Jogador> allAvailableUsers = new List<Jogador>();
 
-            foreach (JogadorPessoa item in availableUsers)
+            foreach (JogadorPessoa item in availableUsersPessoa)
             {
                 item.Usuario = _context.ApplicationUser.Where(j => j.JogadorId == item.Id).FirstOrDefault();
+                allAvailableUsers.Add((Jogador)item);
+            }
+
+            foreach (JogadorMaquina item in availableUsersMaquina)
+            {
+                allAvailableUsers.Add((Jogador)item);
             }
 
             ViewBag.Jogadores =
-                new SelectList(availableUsers,
+                new SelectList(allAvailableUsers,
                 nameof(JogadorPessoa.Id),
                 nameof(JogadorPessoa.Nome),
                 jogadores

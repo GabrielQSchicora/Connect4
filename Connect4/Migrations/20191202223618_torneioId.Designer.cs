@@ -4,14 +4,16 @@ using Connect4.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Connect4.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191202223618_torneioId")]
+    partial class torneioId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -334,19 +336,6 @@ namespace Connect4.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("Connect4.Models.JogadorMaquina", b =>
-                {
-                    b.HasBaseType("Connect4.Models.Jogador");
-
-                    b.Property<string>("NomeMaquina")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("URLServico")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasDiscriminator().HasValue("JogadorMaquina");
                 });
 
             modelBuilder.Entity("Connect4.Models.JogadorPessoa", b =>

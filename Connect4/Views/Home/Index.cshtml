@@ -15,8 +15,13 @@
         else
         {
             <br><br><br>
-            <a class="btn btn-success" asp-area="" asp-controller="Jogo" asp-action="CriarJogo">Criar Jogo</a>
+            <a class="btn btn-success" asp-area="" asp-controller="Jogo" asp-action="CriarJogoPessoa">Criar Jogo (Contra pessoa)</a>
             <br><br>
+            @if ((int) ViewData["QuantidadeMaquinas"] > 0)
+            {
+                <a class="btn btn-success" asp-area="" asp-controller="Jogo" asp-action="CriarJogoMaquina">Criar Jogo (Contra Máquina)</a>
+                <br><br>
+            }
             <a class="btn btn-success" asp-area="" asp-controller="Jogo" asp-action="ContinuarJogo">Continuar Jogo</a>
         }
     </div>
