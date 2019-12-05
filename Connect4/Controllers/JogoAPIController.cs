@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Connect4.Data;
 using Connect4.Models;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Connect4.Controllers
 {
@@ -44,7 +46,10 @@ namespace Connect4.Controllers
         [Authorize]
         public IActionResult ObterJogo(int id)
         {
-            var jogo = _context.Jogo.Include(j => j.tabuleiro).Where(j => j.Id == id).FirstOrDefault();
+            var jogo = _context.Jogo.Include(j => j.tabuleiro)
+                                    .Include(j => j.Jogador1)
+                                    .Include(j => j.Jogador2)
+                                    .Where(j => j.Id == id).FirstOrDefault();
 
             if (jogo == null)
             {
@@ -57,12 +62,16 @@ namespace Connect4.Controllers
                 return Forbid();
             }
 
-            if (jogo.tabuleiro != null)
+            if (jogo.tabuleiro == null)
             {
-                return Ok(jogo.tabuleiro);
+                jogo.tabuleiro = new Tabuleiro();
             }
-            jogo.tabuleiro = new Tabuleiro();
+
+            /*Jogador primeiroJogador = (jogo.tabuleiro.JogadorAtual == 1) ? jogo.Jogador1 : jogo.Jogador2;
+            this.VerificaJogadaComputador(primeiroJogador, jogo);*/
+
             _context.SaveChanges();
+
             return Ok(jogo.tabuleiro);
         }
 
@@ -129,7 +138,10 @@ namespace Connect4.Controllers
         [Route("Jogar")]
         public IActionResult Jogar(int JogoId, int coluna)
         {
-            var jogo = _context.Jogo.Include(j => j.tabuleiro).Include(j => j.Jogador1).Include(j => j.Jogador2).Where(j => j.Id == JogoId).FirstOrDefault();
+            var jogo = _context.Jogo.Include(j => j.tabuleiro)
+                                    .Include(j => j.Jogador1)
+                                    .Include(j => j.Jogador2)
+                                    .Where(j => j.Id == JogoId).FirstOrDefault();
 
             if (jogo == null)
             {
@@ -192,6 +204,10 @@ namespace Connect4.Controllers
             try
             {
                 jogo.tabuleiro.Jogar(coluna, jogo.tabuleiro.JogadorAtual);
+
+                /*Jogador outroJogador = (jogo.tabuleiro.JogadorAtual == 1) ? jogo.Jogador1 : jogo.Jogador2;
+                this.VerificaJogadaComputador(outroJogador, jogo);*/
+
                 _context.SaveChanges();
             }catch(Exception e)
             {
@@ -199,6 +215,45 @@ namespace Connect4.Controllers
             }
 
             return Ok(jogo.tabuleiro);
+        }
+
+        private void VerificaJogadaComputador(Jogador jogador, Jogo jogo)
+        {
+            if (jogador is JogadorMaquina)
+            {
+                try
+                {
+                    var jogada = this.JogarComputador(jogo.tabuleiro, (JogadorMaquina)jogador);
+                    jogo.tabuleiro.Jogar(jogo.tabuleiro.JogadorAtual, jogada.Result);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+
+        private async Task<int> JogarComputador(Tabuleiro t, JogadorMaquina jc)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                StringContent content = new StringContent(JsonConvert.SerializeObject(t), Encoding.UTF8, "application/json");
+
+                var response = await httpClient.PostAsync(jc.URLServico, content);
+
+                using (response)
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string apiResponse = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<int>(apiResponse);
+                    }
+                    else
+                    {
+                        throw new ApplicationException("Erro ao conectar ao serviço de Inteligência Artificial.");
+                    }
+                }
+            }
         }
 
         [HttpGet(Name = "VerificaJogadorAtual")]

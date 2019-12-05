@@ -111,6 +111,7 @@ namespace Connect4.Controllers
                 Jogador2 = randMachinePlayer,
                 tabuleiro = new Tabuleiro()
             };
+
             _context.Add(Jogo);
             _context.SaveChanges();
 

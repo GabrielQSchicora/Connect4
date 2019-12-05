@@ -9,11 +9,7 @@ namespace Connect4.Models
     {
         public int RealizarJogada(Tabuleiro tabuleiro)
         {
-            int jogada;
-            do
-            {
-                jogada = new Random().Next(Tabuleiro.NUMERO_COLUNAS);
-            } while (tabuleiro.TabuleiroJogo[0, jogada] != 0);
+            int jogada = new Random().Next(Tabuleiro.NUMERO_COLUNAS);
 
             return jogada;
         }

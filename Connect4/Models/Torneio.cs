@@ -11,7 +11,7 @@ namespace Connect4.Models
     {
         public int Id { get; set; }
         [RegularExpression(@"^[A-Z][a-zA-Z0-9\s-_\@]*$", 
-            ErrorMessage = "O nome do torneio não pode começar com um número, precisa começar com letra maiuscula e não aceita caracteres especiais (exceto - e _).")]
+            ErrorMessage = "O nome do torneio não pode começar com um número, precisa começar com letra maiuscula e não aceita caracteres especiais (exceto - e _ e @).")]
         public String Nome { get; set; }
         [Display(Name = "Quantidade de Jogadores")]
         [Range(4,16, ErrorMessage = "Quantidade de jogadores deve ser entre 4 e 16.")]
@@ -32,7 +32,7 @@ namespace Connect4.Models
             List<Jogo> jogosTurno = new List<Jogo>();
             List<Jogo> jogosReturno = new List<Jogo>();
 
-            //Quantidade de jogos -> (((this.QuantidadeJogadores - 1) * 2) * this.QuantidadeJogadores) / 2;
+            //Quantidade de jogos -> (((QuantidadeJogadores - 1) * 2) * QuantidadeJogadores) / 2;
 
             for(int i = 0; i < this.QuantidadeJogadores; i++)
             {
@@ -59,7 +59,6 @@ namespace Connect4.Models
             jogosReturno = this.ShuffleList(jogosReturno);
 
             jogosTurno.AddRange(jogosReturno);
-            //this.Jogos.Clear();
             this.Jogos = jogosTurno;
 
             return true;

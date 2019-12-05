@@ -8,18 +8,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Connect4.Controllers
 {
+    //[Produces("application/json")]
     [Route("api/JogadorMaquina")]
     [ApiController]
     public class JogadorMaquinaAPIController : ControllerBase
     {
+        [HttpGet(Name = "teste")]
+        [Route("teste")]
+        public int teste()
+        {
+            return 30;
+        }
+
         [HttpPost(Name = "RealizarJogada")]
         [Route("RealizarJogada")]
         public int RealizarJogada(Tabuleiro tabuleiro)
         {
             IJogadorComputador computador = new JogadorMaquinaFacil();
-            int result = computador.RealizarJogada(tabuleiro);
-
-            return result;
+            return computador.RealizarJogada(tabuleiro);
         }
     }
 }
